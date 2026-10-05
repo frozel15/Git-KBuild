@@ -276,7 +276,8 @@ jobs:
           --enable CONFIG_NETFILTER_ADVANCED \
           --enable CONFIG_NETFILTER_XT_MATCH_ADDRTYPE \
           --enable CONFIG_IP6_NF_TARGET_MASQUERADE \
-          --enable CONFIG_IP6_NF_NAT
+          --enable CONFIG_IP6_NF_NAT \
+          --enable CONFIG_WIREGUARD
           make O=out olddefconfig
           grep -E \
           '^CONFIG_(PID_NS|IPC_NS|USER_NS|MEMCG|CGROUP_DEVICE|CGROUP_PIDS|POSIX_MQUEUE|OVERLAY_FS|MACVLAN|IPVLAN|BRIDGE_NETFILTER)=' \
