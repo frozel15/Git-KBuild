@@ -222,41 +222,57 @@ jobs:
           toggle_config "CONFIG_RW_SWAPPINESS" "${{ github.event.inputs.ENABLE_RW_SWAPPINESS }}"
           toggle_config "CONFIG_BYPASS_CHARGING" "${{ github.event.inputs.ENABLE_BYPASS_CHARGING }}"
 
-          echo "==== Enabling Docker Kernel Requirements ===="
+          echo "==== Enabling Docker Kernel Requirements & Dependencies ===="
           enable_docker_config() {
             ./scripts/config --file $DEFCONFIG --enable "$1"
           }
 
-          # Namespaces & Cgroups
+          # Enable Parent Dependencies First
+          enable_docker_config "CONFIG_EXPERT"
+          enable_docker_config "CONFIG_CHECKPOINT_RESTORE"
+          enable_docker_config "CONFIG_NETFILTER_ADVANCED"
+          enable_docker_config "CONFIG_IP_VS"
+
+          # Namespaces
           enable_docker_config "CONFIG_NAMESPACES"
           enable_docker_config "CONFIG_NET_NS"
           enable_docker_config "CONFIG_PID_NS"
           enable_docker_config "CONFIG_IPC_NS"
           enable_docker_config "CONFIG_UTS_NS"
+          enable_docker_config "CONFIG_USER_NS"
+
+          # Cgroups v1 / v2 Controllers & Subsystems
           enable_docker_config "CONFIG_CGROUPS"
-          enable_docker_config "CONFIG_CGROUP_CPUACCT"
-          enable_docker_config "CONFIG_CGROUP_DEVICE"
           enable_docker_config "CONFIG_CGROUP_FREEZER"
+          enable_docker_config "CONFIG_CGROUP_PIDS"
+          enable_docker_config "CONFIG_CGROUP_DEVICE"
+          enable_docker_config "CONFIG_CGROUP_CPUACCT"
           enable_docker_config "CONFIG_CGROUP_SCHED"
+          enable_docker_config "CONFIG_FAIR_GROUP_SCHED"
+          enable_docker_config "CONFIG_CFS_BANDWIDTH"
+          enable_docker_config "CONFIG_CPUSETS"
           enable_docker_config "CONFIG_MEMCG"
           enable_docker_config "CONFIG_MEMCG_SWAP"
+          enable_docker_config "CONFIG_BLK_CGROUP"
+          enable_docker_config "CONFIG_BLK_DEV_THROTTLING"
+          enable_docker_config "CONFIG_POSIX_MQUEUE"
 
           # Storage
           enable_docker_config "CONFIG_OVERLAY_FS"
 
-          # Networking & Virtual Devices
+          # Networking, Virtual Devices & Netfilter
           enable_docker_config "CONFIG_VETH"
-          enable_docker_config "CONFIG_BRIDGE"
-          enable_docker_config "CONFIG_NETFILTER_ADVANCED"
-          enable_docker_config "CONFIG_BRIDGE_NETFILTER"
-          enable_docker_config "CONFIG_NETFILTER_XT_MATCH_IPVS"
-          enable_docker_config "CONFIG_IP_NF_FILTER"
-          enable_docker_config "CONFIG_IP_NF_TARGET_MASQUERADE"
-          enable_docker_config "CONFIG_NETFILTER_XT_MARK"
-          enable_docker_config "CONFIG_TUN"
           enable_docker_config "CONFIG_MACVLAN"
+          enable_docker_config "CONFIG_IPVLAN"
+          enable_docker_config "CONFIG_BRIDGE"
+          enable_docker_config "CONFIG_BRIDGE_NETFILTER"
+          enable_docker_config "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE"
+          enable_docker_config "CONFIG_NETFILTER_XT_MATCH_IPVS"
+          enable_docker_config "CONFIG_IP6_NF_TARGET_MASQUERADE"
+          enable_docker_config "CONFIG_IP6_NF_NAT"
 
-          echo "================================="
+          # Force resolution of configuration dependencies
+          make -C kernel_tree ARCH=arm64 vendor/alioth_defconfig
 
       - name: Apply Modifications (if modified build)
         if: matrix.kernel == 2 || matrix.kernel == 4
