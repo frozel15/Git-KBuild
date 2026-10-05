@@ -272,7 +272,7 @@ jobs:
           enable_docker_config "CONFIG_IP6_NF_NAT"
 
           # Force resolution of configuration dependencies
-          make -C ARCH=arm64 vendor/alioth_defconfig
+          make ARCH=arm64 vendor/alioth_defconfig
 
       - name: Apply Modifications (if modified build)
         if: matrix.kernel == 2 || matrix.kernel == 4
