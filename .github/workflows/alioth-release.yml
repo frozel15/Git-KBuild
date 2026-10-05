@@ -249,7 +249,6 @@ jobs:
           enable_docker_config "CONFIG_CGROUP_CPUACCT"
           enable_docker_config "CONFIG_CGROUP_SCHED"
           enable_docker_config "CONFIG_FAIR_GROUP_SCHED"
-          enable_docker_config "CONFIG_CFS_BANDWIDTH"
           enable_docker_config "CONFIG_CPUSETS"
           enable_docker_config "CONFIG_MEMCG"
           enable_docker_config "CONFIG_MEMCG_SWAP"
