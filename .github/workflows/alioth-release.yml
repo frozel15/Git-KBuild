@@ -195,7 +195,7 @@ jobs:
           cd kernel_tree
           sed -i -e '/# CONFIG_OPLUS_PORT is not set/c\CONFIG_OPLUS_PORT=y;' arch/arm64/configs/vendor/alioth_defconfig
 
-      - name: Apply Custom Feature Switches
+      - name: Apply Custom Feature Switches & Docker Configs
         run: |
           cd kernel_tree
           DEFCONFIG="arch/arm64/configs/vendor/alioth_defconfig"
@@ -221,6 +221,41 @@ jobs:
           toggle_config "CONFIG_NOMOUNT" "${{ github.event.inputs.ENABLE_NOMOUNT }}"
           toggle_config "CONFIG_RW_SWAPPINESS" "${{ github.event.inputs.ENABLE_RW_SWAPPINESS }}"
           toggle_config "CONFIG_BYPASS_CHARGING" "${{ github.event.inputs.ENABLE_BYPASS_CHARGING }}"
+
+          echo "==== Enabling Docker Kernel Requirements ===="
+          enable_docker_config() {
+            ./scripts/config --file $DEFCONFIG --enable "$1"
+          }
+
+          # Namespaces & Cgroups
+          enable_docker_config "CONFIG_NAMESPACES"
+          enable_docker_config "CONFIG_NET_NS"
+          enable_docker_config "CONFIG_PID_NS"
+          enable_docker_config "CONFIG_IPC_NS"
+          enable_docker_config "CONFIG_UTS_NS"
+          enable_docker_config "CONFIG_CGROUPS"
+          enable_docker_config "CONFIG_CGROUP_CPUACCT"
+          enable_docker_config "CONFIG_CGROUP_DEVICE"
+          enable_docker_config "CONFIG_CGROUP_FREEZER"
+          enable_docker_config "CONFIG_CGROUP_SCHED"
+          enable_docker_config "CONFIG_MEMCG"
+          enable_docker_config "CONFIG_MEMCG_SWAP"
+
+          # Storage
+          enable_docker_config "CONFIG_OVERLAY_FS"
+
+          # Networking & Virtual Devices
+          enable_docker_config "CONFIG_VETH"
+          enable_docker_config "CONFIG_BRIDGE"
+          enable_docker_config "CONFIG_NETFILTER_ADVANCED"
+          enable_docker_config "CONFIG_BRIDGE_NETFILTER"
+          enable_docker_config "CONFIG_NETFILTER_XT_MATCH_IPVS"
+          enable_docker_config "CONFIG_IP_NF_FILTER"
+          enable_docker_config "CONFIG_IP_NF_TARGET_MASQUERADE"
+          enable_docker_config "CONFIG_NETFILTER_XT_MARK"
+          enable_docker_config "CONFIG_TUN"
+          enable_docker_config "CONFIG_MACVLAN"
+
           echo "================================="
 
       - name: Apply Modifications (if modified build)
