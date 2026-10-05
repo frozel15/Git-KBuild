@@ -404,7 +404,7 @@ jobs:
 
       - name: Define ZIP Name
         run: |
-          COMPILED_DATE=$(date +%Y%m%d)
+          COMPILED_DATE=$(date +%Y%m%d-%H%M%S)
           EXTRA2=""
           if [[ "${{ github.event.inputs.VARIANT }}" == "W-variant" ]]; then
             EXTRA2="-W"
